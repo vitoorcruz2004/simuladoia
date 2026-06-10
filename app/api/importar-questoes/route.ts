@@ -6,85 +6,72 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY!
 )
 
-const AREA_MAP: Record<string, string> = {
-  'linguagens': 'Linguagens',
-  'humanas': 'Ciências Humanas',
-  'natureza': 'Ciências da Natureza',
-  'matematica': 'Matemática',
-  'matematica-tecnologias': 'Matemática',
-  'linguagens-codigos': 'Linguagens',
-  'ciencias-humanas': 'Ciências Humanas',
-  'ciencias-natureza': 'Ciências da Natureza',
-}
-
-function mapArea(raw: string): string {
-  const key = raw.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-')
-  return AREA_MAP[key] || raw
-}
+const DISCIPLINES = [
+  { value: 'matematica', area: 'Matemática' },
+  { value: 'linguagens', area: 'Linguagens' },
+  { value: 'ciencias-humanas', area: 'Ciências Humanas' },
+  { value: 'ciencias-natureza', area: 'Ciências da Natureza' },
+]
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   const ano = searchParams.get('ano') || '2023'
-  const limite = parseInt(searchParams.get('limite') || '50')
+  const limite = parseInt(searchParams.get('limite') || '45')
 
-  try {
-    // Busca lista de questões do enem.dev
-    const res = await fetch(`https://api.enem.dev/v1/exams/${ano}/questions?limit=${limite}&offset=0`, {
-      headers: { 'Accept': 'application/json' }
-    })
+  let totalImportadas = 0
+  let totalErros = 0
 
-    if (!res.ok) {
-      return NextResponse.json({ error: `API enem.dev retornou ${res.status}` }, { status: 500 })
-    }
+  for (const disc of DISCIPLINES) {
+    try {
+      const res = await fetch(
+        `https://api.enem.dev/v1/exams/${ano}/questions?discipline=${disc.value}&limit=${limite}&offset=0`,
+        { headers: { 'Accept': 'application/json' } }
+      )
 
-    const data = await res.json()
-    const questoes = data.questions || data || []
+      if (!res.ok) { totalErros++; continue }
 
-    if (!Array.isArray(questoes) || questoes.length === 0) {
-      return NextResponse.json({ error: 'Nenhuma questão retornada', data }, { status: 500 })
-    }
+      const data = await res.json()
+      const questoes = data.questions || []
 
-    let importadas = 0
-    let erros = 0
+      for (const q of questoes) {
+        // Pula questões de língua estrangeira
+        if (q.language === 'espanhol' || q.language === 'ingles') continue
 
-    for (const q of questoes) {
-      try {
-        const alternativas = (q.alternatives || q.alternativas || []).map((a: any) => ({
-          letra: a.letter || a.letra,
-          texto: a.text || a.texto || ''
+        const alternativas = (q.alternatives || []).map((a: any) => ({
+          letra: a.letter,
+          texto: a.text || ''
         }))
 
-        const respostaCorreta = q.correctAlternative || q.alternativaCorreta || q.gabarito || 'A'
+        const enunciado = q.alternativesIntroduction || q.title || ''
+        const contexto = q.context || null
 
-        const { error } = await supabase.from('questoes').upsert({
-          id: q.id || undefined,
-          area: mapArea(q.discipline || q.area || q.disciplina || 'Linguagens'),
-          subarea: q.subject || q.subarea || q.assunto || null,
-          enunciado: q.title || q.enunciado || q.statement || '',
-          contexto: q.context || q.contexto || q.texts?.map((t: any) => t.text || t.texto || '').join('\n\n') || null,
-          alternativas: alternativas,
-          resposta_correta: respostaCorreta,
+        if (!enunciado || alternativas.length === 0) continue
+
+        const { error } = await supabase.from('questoes').insert({
+          area: disc.area,
+          subarea: null,
+          enunciado,
+          contexto,
+          alternativas,
+          resposta_correta: q.correctAlternative || 'A',
           explicacao: null,
           ano: parseInt(ano),
           fonte: 'ENEM',
           dificuldade: 2,
-        }, { onConflict: 'id' })
+        })
 
-        if (error) { erros++; console.error(error) }
-        else importadas++
-      } catch (e) {
-        erros++
+        if (error && !error.message.includes('duplicate')) totalErros++
+        else totalImportadas++
       }
+    } catch (e) {
+      totalErros++
     }
-
-    return NextResponse.json({
-      sucesso: true,
-      ano,
-      importadas,
-      erros,
-      total: questoes.length
-    })
-  } catch (e: any) {
-    return NextResponse.json({ error: e.message }, { status: 500 })
   }
+
+  return NextResponse.json({
+    sucesso: true,
+    ano,
+    importadas: totalImportadas,
+    erros: totalErros,
+  })
 }
