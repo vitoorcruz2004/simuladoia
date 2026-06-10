@@ -18,23 +18,27 @@ export default function Auth() {
     setErro('')
 
     if (modo === 'cadastro') {
-      const { error } = await supabase.auth.signUp({ email, password: senha })
+      const { error } = await supabase.auth.signUp({
+        email,
+        password: senha,
+        options: {
+          emailRedirectTo: `https://project-qtrm8-nove.vercel.app/onboarding`
+        }
+      })
       if (error) { setErro(error.message); setLoading(false); return }
-      // atualiza nome no profile
       const { data: { user } } = await supabase.auth.getUser()
       if (user) await supabase.from('profiles').update({ nome }).eq('id', user.id)
+      router.push('/onboarding')
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password: senha })
       if (error) { setErro('Email ou senha incorretos'); setLoading(false); return }
+      router.push('/dashboard')
     }
-
-    router.push('/dashboard')
   }
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4" style={{background:'#09090B'}}>
       <div className="w-full max-w-md">
-        {/* Logo */}
         <div className="text-center mb-10">
           <div className="text-2xl font-extrabold tracking-tight">
             Simulado<span style={{color:'#818CF8'}}>IA</span>
@@ -44,7 +48,6 @@ export default function Auth() {
           </p>
         </div>
 
-        {/* Card */}
         <div className="rounded-2xl border border-zinc-800 p-8" style={{background:'#111113'}}>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             {modo === 'cadastro' && (
