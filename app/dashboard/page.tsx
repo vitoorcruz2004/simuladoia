@@ -130,10 +130,11 @@ export default function Dashboard() {
         
         /* MOBILE LAYOUT */
         @media(max-width:768px){
-          .sidebar{display:none}
-          .main{margin-left:0;padding:60px 14px 100px}
-          .grid-2{grid-template-columns:1fr}
+          .sidebar{display:none!important}
+          .main{margin-left:0!important;padding:60px 14px 100px!important}
+          .grid-2{grid-template-columns:1fr!important}
           .mobile-nav{display:flex!important}
+          .mobile-streak{display:block!important}
         }
         @media(min-width:769px){
           .mobile-nav{display:none!important}
@@ -215,7 +216,7 @@ export default function Dashboard() {
 
         {/* STREAK HERO — só no desktop fica no topo */}
         {gam && (
-          <div className="u" style={{ ...card, padding: '20px 24px', marginBottom: 20, background: gam.streak_atual >= 3 ? 'linear-gradient(135deg,rgba(245,158,11,0.1),rgba(239,68,68,0.05))' : 'rgba(255,255,255,0.03)', border: gam.streak_atual >= 3 ? '1px solid rgba(245,158,11,0.25)' : '1px solid rgba(255,255,255,0.07)' }}>
+          <div className="u mobile-streak" style={{ ...card, padding: '20px 24px', marginBottom: 20, background: gam.streak_atual >= 3 ? 'linear-gradient(135deg,rgba(245,158,11,0.1),rgba(239,68,68,0.05))' : 'rgba(255,255,255,0.03)', border: gam.streak_atual >= 3 ? '1px solid rgba(245,158,11,0.25)' : '1px solid rgba(255,255,255,0.07)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                 <CircleProgress pct={Math.min(100, gam.streak_atual * 3.3)} size={64} stroke={5} color={gam.streak_atual >= 7 ? '#f59e0b' : gam.streak_atual >= 3 ? '#fb923c' : '#6366F1'}>
@@ -363,7 +364,7 @@ export default function Dashboard() {
         </div>
 
         {/* MOBILE ACTIONS — só no mobile */}
-        <div className="mobile-nav" style={{ display: 'none', flexDirection: 'column', gap: 10, marginTop: 20 }}>
+        <div className="mobile-nav" style={{ flexDirection: 'column', gap: 10, marginTop: 20 }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             <Link href="/simulado">
               <button className="tap" style={{ width: '100%', padding: '16px', borderRadius: 14, fontWeight: 800, fontSize: '0.88rem', border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#6366F1,#818CF8)', color: '#fff', boxShadow: '0 6px 20px rgba(99,102,241,0.35)' }}>
