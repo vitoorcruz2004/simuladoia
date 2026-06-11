@@ -133,11 +133,10 @@ export default function Dashboard() {
           .sidebar{display:none!important}
           .main{margin-left:0!important;padding:60px 14px 100px!important}
           .grid-2{grid-template-columns:1fr!important}
-          .mobile-nav{display:flex!important}
-          .mobile-streak{display:block!important}
+          #mobile-actions{display:flex!important}
         }
         @media(min-width:769px){
-          .mobile-nav{display:none!important}
+          #mobile-actions{display:none!important}
           .mobile-header{display:none!important}
         }
       `}</style>
@@ -363,8 +362,8 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* MOBILE ACTIONS — só no mobile */}
-        <div className="mobile-nav" style={{ flexDirection: 'column', gap: 10, marginTop: 20 }}>
+        {/* MOBILE ACTIONS — só no mobile via CSS */}
+        <div id="mobile-actions" style={{ flexDirection: 'column', gap: 10, marginTop: 20 }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             <Link href="/simulado">
               <button className="tap" style={{ width: '100%', padding: '16px', borderRadius: 14, fontWeight: 800, fontSize: '0.88rem', border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#6366F1,#818CF8)', color: '#fff', boxShadow: '0 6px 20px rgba(99,102,241,0.35)' }}>
@@ -377,12 +376,14 @@ export default function Dashboard() {
               </button>
             </Link>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
             {[
               { href: '/revisao', icon: '🔄', label: 'Revisão', badge: totalErradas > 0 ? totalErradas : null },
               { href: '/flashcards', icon: '⚡', label: 'Flashcards' },
               { href: '/plano', icon: '📅', label: 'Plano' },
+              { href: '/sisu', icon: '🎓', label: 'SiSU' },
               { href: '/leaderboard', icon: '🏆', label: 'Ranking' },
+              { href: '/amigos', icon: '👥', label: 'Amigos' },
             ].map(a => (
               <Link key={a.href} href={a.href}>
                 <button className="tap" style={{ width: '100%', padding: '12px 5px', borderRadius: 13, position: 'relative', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', color: '#71717A', fontSize: '0.7rem', fontWeight: 600, cursor: 'pointer' }}>
