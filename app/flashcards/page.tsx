@@ -254,13 +254,11 @@ export default function Flashcards() {
             {virado ? (
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
                 <button onClick={() => responder(false)} className="tap"
-                  style={{padding:'16px',borderRadius:14,fontWeight:700,fontSize:'0.88rem',border:'none',cursor:'pointer',
-                    background:'rgba(239,68,68,0.1)',color:'#F87171',border:'1px solid rgba(239,68,68,0.25)'}}>
+                  style={{padding:'16px',borderRadius:14,fontWeight:700,fontSize:'0.88rem',cursor:'pointer',background:'rgba(239,68,68,0.1)',color:'#F87171',border:'1px solid rgba(239,68,68,0.25)'}}>
                   ✗ Não sabia
                 </button>
                 <button onClick={() => responder(true)} className="tap"
-                  style={{padding:'16px',borderRadius:14,fontWeight:700,fontSize:'0.88rem',border:'none',cursor:'pointer',
-                    background:'rgba(52,211,153,0.1)',color:'#34D399',border:'1px solid rgba(52,211,153,0.25)'}}>
+                  style={{padding:'16px',borderRadius:14,fontWeight:700,fontSize:'0.88rem',cursor:'pointer',background:'rgba(52,211,153,0.1)',color:'#34D399',border:'1px solid rgba(52,211,153,0.25)'}}>
                   ✓ Sabia!
                 </button>
               </div>
