@@ -283,9 +283,10 @@ export default function Dashboard() {
             </button>
           </Link>
         </div>
-        <div className="u u6" style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:8}}>
+        <div className="u u6" style={{display:'grid',gridTemplateColumns:'repeat(5,1fr)',gap:8}}>
           {[
             {href:'/revisao',icon:'🔄',label:'Revisão',badge:totalErradas>0?totalErradas:null,accent:totalErradas>0},
+            {href:'/flashcards',icon:'⚡',label:'Flashcards',badge:null,accent:false},
             {href:'/plano',icon:'📅',label:'Plano',badge:null,accent:false},
             {href:'/sisu',icon:'🎓',label:'SiSU',badge:null,accent:false},
             {href:'/leaderboard',icon:'🏆',label:'Ranking',badge:null,accent:false},
