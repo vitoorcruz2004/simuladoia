@@ -290,6 +290,7 @@ export default function Dashboard() {
             {href:'/plano',icon:'📅',label:'Plano',badge:null,accent:false},
             {href:'/sisu',icon:'🎓',label:'SiSU',badge:null,accent:false},
             {href:'/leaderboard',icon:'🏆',label:'Ranking',badge:null,accent:false},
+            {href:'/amigos',icon:'👥',label:'Amigos',badge:null,accent:false},
           ].map(a=>(
             <Link key={a.href} href={a.href}>
               <button className="tap" style={{width:'100%',padding:'12px 5px',borderRadius:13,position:'relative',
