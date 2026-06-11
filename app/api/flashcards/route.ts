@@ -8,7 +8,6 @@ const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env
 export async function POST(req: NextRequest) {
   const { userId, area, quantidade = 10 } = await req.json()
 
-  // Busca questões que o usuário errou nessa área pra extrair os subareas/tópicos
   let topicosErrados: string[] = []
   let percentualArea = 50
 
@@ -24,7 +23,6 @@ export async function POST(req: NextRequest) {
         .map((d: any) => d.subarea)
     }
 
-    // Busca também questões erradas pra extrair padrões
     const { data: erradas } = await supabase
       .from('questoes_erradas')
       .select('questao_id, vezes_errada, questoes(area, subarea)')
@@ -36,43 +34,31 @@ export async function POST(req: NextRequest) {
       const subareasErradas = erradas
         .filter((e: any) => e.questoes?.area === area && e.questoes?.subarea)
         .map((e: any) => e.questoes.subarea)
-      topicosErrados = [...new Set([...topicosErrados, ...subareasErradas])].slice(0, 5)
+      const combined = topicosErrados.concat(subareasErradas)
+      const unique: string[] = []
+      combined.forEach(t => { if (!unique.includes(t)) unique.push(t) })
+      topicosErrados = unique.slice(0, 5)
     }
   }
 
   const focoPorcentagem = percentualArea < 40 ? 'básico e intermediário' : percentualArea < 70 ? 'intermediário e avançado' : 'avançado e revisão'
   const focoTopicos = topicosErrados.length > 0
     ? `Foque especialmente nos tópicos onde o aluno tem dificuldade: ${topicosErrados.join(', ')}.`
-    : `O aluno não tem histórico de erros ainda. Cubra os tópicos mais importantes do ENEM.`
+    : `Cubra os tópicos mais importantes do ENEM nessa área.`
 
   const prompt = `Você é um especialista em preparação para o ENEM brasileiro.
 
 CONTEXTO DO ALUNO:
 - Área: ${area}
-- Aproveitamento atual nessa área: ${percentualArea}%
-- Nível de dificuldade dos cards: ${focoPorcentagem}
+- Aproveitamento atual: ${percentualArea}%
+- Nível dos cards: ${focoPorcentagem}
 - ${focoTopicos}
 
-Crie ${quantidade} flashcards de estudo PERSONALIZADOS para esse aluno, focando nos pontos fracos identificados.
+Crie ${quantidade} flashcards personalizados focando nos pontos fracos.
+Perguntas diretas, respostas concisas (máx 3 linhas), em português.
 
-Os flashcards devem:
-- Abordar os tópicos onde o aluno tem mais dificuldade
-- Ter nível de dificuldade adequado ao aproveitamento atual (${percentualArea}%)
-- Perguntas diretas e objetivas na frente
-- Respostas completas mas concisas no verso (máx 3 linhas)
-- Cobrir conceitos que caem no ENEM
-- Ser em português brasileiro
-
-Retorne APENAS JSON válido sem markdown:
-{
-  "flashcards": [
-    {
-      "frente": "pergunta ou conceito",
-      "verso": "resposta completa e didática",
-      "topico": "tópico específico desse card"
-    }
-  ]
-}`
+Retorne APENAS JSON sem markdown:
+{"flashcards":[{"frente":"pergunta","verso":"resposta","topico":"tópico"}]}`
 
   const completion = await openai.chat.completions.create({
     model: 'gpt-4o-mini',
@@ -90,8 +76,7 @@ Retorne APENAS JSON válido sem markdown:
     if (userId) {
       const rows = cards.map((c: any) => ({
         user_id: userId, area,
-        frente: c.frente, verso: c.verso,
-        fonte: 'IA',
+        frente: c.frente, verso: c.verso, fonte: 'IA',
         proxima_revisao: new Date().toISOString().split('T')[0],
       }))
       await supabase.from('flashcards').insert(rows)
