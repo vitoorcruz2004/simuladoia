@@ -5,6 +5,31 @@ import { atualizarGamificacao, registrarQuestaoErrada } from '@/lib/gamificacao'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
+
+// Parse markdown simples para exibir imagens e negrito
+function parseContexto(texto: string) {
+  if (!texto) return null
+  const partes = texto.split(/(!\[.*?\]\(.*?\))/g)
+  return partes.map((parte, i) => {
+    const imgMatch = parte.match(/!\[.*?\]\((.*?)\)/)
+    if (imgMatch) {
+      const url = imgMatch[1]
+      if (url.includes('broken-image')) return null
+      return (
+        <div key={i} style={{margin:'12px 0',textAlign:'center'}}>
+          <img src={url} alt="Imagem da questão" 
+            style={{maxWidth:'100%',borderRadius:8,border:'1px solid rgba(255,255,255,0.1)'}}
+            onError={(e) => { (e.target as HTMLImageElement).style.display='none' }}
+          />
+        </div>
+      )
+    }
+    if (!parte.trim()) return null
+    return <span key={i} style={{whiteSpace:'pre-wrap'}}>{parte}</span>
+  }).filter(Boolean)
+}
+
+
 interface Questao {
   id: string
   area: string
@@ -246,7 +271,7 @@ export default function Simulado() {
             {mostrarContexto && (
               <div className="rounded-xl border border-zinc-700 p-5 mb-4 text-sm leading-relaxed text-zinc-300 whitespace-pre-wrap"
                 style={{background:'#0d0d14', borderColor:'rgba(99,102,241,0.2)'}}>
-                {q.contexto}
+                {parseContexto(q.contexto || "")}
               </div>
             )}
           </div>
