@@ -300,6 +300,17 @@ export default function Revisao() {
                 ) : null}
               </div>
             )}
+            {/* BOTÃO VIDEOAULA — aparece quando erra */}
+            {respondida && !acertou && (
+              <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                <p style={{ fontSize: '0.72rem', color: '#52525B', marginBottom: 8 }}>Ainda com dúvida? Assista uma videoaula sobre esse conteúdo:</p>
+                <Link href={`/videoaulas?area=${encodeURIComponent(q.area)}&topico=${encodeURIComponent(q.subarea || q.area)}`}>
+                  <button className="tap" style={{ width: '100%', padding: '10px', borderRadius: 10, fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer', background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)', color: '#818CF8' }}>
+                    🎬 Ver videoaula sobre {q.subarea || q.area}
+                  </button>
+                </Link>
+              </div>
+            )}
           </div>
         )}
 
