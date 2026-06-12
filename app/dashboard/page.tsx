@@ -26,6 +26,7 @@ const SIDEBAR_ITEMS = [
   { href: '/revisao', icon: '🔄', label: 'Revisão', badge: true },
   { href: '/sisu', icon: '🎓', label: 'Simulador SiSU' },
   { href: '/leaderboard', icon: '🏆', label: 'Ranking' },
+  { href: '/videoaulas', icon: '🎬', label: 'Videoaulas' },
   { href: '/amigos', icon: '👥', label: 'Amigos' },
 ]
 
