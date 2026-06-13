@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
         model: 'gpt-4o-mini',
         messages: [{
           role: 'user',
-          content: `Você é um especialista em ENEM. Leia esse trecho de questão e retorne APENAS uma query de busca do YouTube (máximo 6 palavras) que encontre uma videoaula explicando o conceito cobrado. Sem aspas, sem pontuação, apenas as palavras-chave do conteúdo específico.
+          content: `Você é um professor. Leia esse trecho de questão e retorne APENAS uma query de busca do YouTube (máximo 5 palavras) que encontre uma videoaula ensinando o conceito do zero — como se o aluno nunca tivesse visto o assunto. Foco no conceito, não na resolução. Sem aspas, sem pontuação.
 
 Área: ${area}
 Questão: ${enunciado.slice(0, 300)}
@@ -32,14 +32,14 @@ Query:`
         temperature: 0.1,
       })
       const queryIA = completion.choices[0].message.content?.trim() || ''
-      query = `${queryIA} ENEM resolução`
+      query = queryIA
     } catch {
-      query = `${topico || area} ENEM resolução exercício`
+      query = `${topico || area} como funciona explicação`
     }
   } else if (topico) {
     query = `${topico} ENEM resolução exercício`
   } else {
-    query = `${area} ENEM revisão`
+    query = `${area} explicação didática`
   }
 
   const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=6&relevanceLanguage=pt&regionCode=BR&key=${key}`
