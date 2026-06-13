@@ -42,16 +42,17 @@ export default function Videoaulas() {
       const params = new URLSearchParams(window.location.search)
       const area = params.get('area')
       const topico = params.get('topico')
-      if (area) { setAreaSel(area); if (topico) { setTopicoSel(topico); buscarVideos(area, topico) } }
+      const enunciado = params.get('enunciado') || ''
+      if (area) { setAreaSel(area); if (topico) { setTopicoSel(topico); buscarVideos(area, topico, enunciado) } }
     }
     load()
   }, [])
 
-  async function buscarVideos(area: string, topico: string) {
+  async function buscarVideos(area: string, topico: string, enunciado = '') {
     setLoading(true)
     setVideoAtivo(null)
     try {
-      const res = await fetch(`/api/videoaulas?area=${encodeURIComponent(area)}&topico=${encodeURIComponent(topico)}`)
+      const res = await fetch(`/api/videoaulas?area=${encodeURIComponent(area)}&topico=${encodeURIComponent(topico)}&enunciado=${encodeURIComponent(enunciado)}`)
       const data = await res.json()
       setVideos(data.videos || [])
     } catch { setVideos([]) }
