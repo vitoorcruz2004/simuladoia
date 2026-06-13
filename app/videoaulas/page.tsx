@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
 interface Video {
@@ -29,7 +29,6 @@ export default function Videoaulas() {
   const [videoAtivo, setVideoAtivo] = useState<Video | null>(null)
   const [desempenho, setDesempenho] = useState<any[]>([])
   const router = useRouter()
-  const searchParams = useSearchParams()
 
   useEffect(() => {
     async function load() {
@@ -40,8 +39,9 @@ export default function Videoaulas() {
       setDesempenho(data || [])
 
       // Se veio com parâmetros (da revisão)
-      const topico = searchParams.get('topico')
-      const area = searchParams.get('area')
+      const params = new URLSearchParams(window.location.search)
+      const area = params.get('area')
+      const topico = params.get('topico')
       if (area) { setAreaSel(area); if (topico) { setTopicoSel(topico); buscarVideos(area, topico) } }
     }
     load()
