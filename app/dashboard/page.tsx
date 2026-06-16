@@ -27,6 +27,7 @@ const SIDEBAR_ITEMS = [
   { href: '/sisu', icon: '🎓', label: 'Simulador SiSU' },
   { href: '/leaderboard', icon: '🏆', label: 'Ranking' },
   { href: '/videoaulas', icon: '🎬', label: 'Videoaulas' },
+  { href: '/repositorio', icon: '📚', label: 'Repositório' },
   { href: '/amigos', icon: '👥', label: 'Amigos' },
 ]
 
